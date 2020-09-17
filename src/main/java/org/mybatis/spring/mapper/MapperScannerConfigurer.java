@@ -1,5 +1,5 @@
 /**
- *    Copyright 2010-2016 the original author or authors.
+ *    Copyright 2010-2020 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ import static org.springframework.util.Assert.notNull;
 
 import java.lang.annotation.Annotation;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.PropertyValue;
@@ -117,6 +120,8 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
 
   private BeanNameGenerator nameGenerator;
 
+  /** Logger that is available to subclasses. */
+  protected final Log logger = LogFactory.getLog(getClass());
   /**
    * This property lets you set the base package for your mapper interface files.
    * <p>
@@ -299,6 +304,7 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
    */
   @Override
   public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
+    logger.warn("【Mybatis-Spring】实现BeanDefinitionRegistryPostProcessor 动态注册Bean到Spring容器");
     if (this.processPropertyPlaceHolders) {
       processPropertyPlaceHolders();
     }
@@ -314,6 +320,8 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
     scanner.setResourceLoader(this.applicationContext);
     scanner.setBeanNameGenerator(this.nameGenerator);
     scanner.registerFilters();
+    //
+    logger.warn("【Mybatis-Spring】把定义的mapper包下的所有bean注册到Spring容器中");
     scanner.scan(StringUtils.tokenizeToStringArray(this.basePackage, ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS));
   }
 
